@@ -1,3 +1,9 @@
+export interface ApplicationConfigResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+}
+
 export abstract class OAuthClientConfig {
   clientId: string;
   redirectUri: string;
@@ -28,5 +34,8 @@ export abstract class OAuthClientConfig {
     return this.scope.split(" ");
   }
   abstract getAuthorizationUrl(): string;
-  abstract exchangeCodeForToken(code: string): Promise<string>;
+  abstract exchangeCodeForToken(
+    code: string
+  ): Promise<ApplicationConfigResponse>;
+  abstract getUserDetails(accessToken: string): Promise<any>;
 }

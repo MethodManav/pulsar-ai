@@ -1,4 +1,7 @@
-import { OAuthClientConfig } from "../../oauth/OAuthClientConfig";
+import {
+  ApplicationConfigResponse,
+  OAuthClientConfig,
+} from "../../oauth/OAuthClientConfig";
 import githubConfig from "./GithubConfig";
 
 export class GithubClient extends OAuthClientConfig {
@@ -13,26 +16,57 @@ export class GithubClient extends OAuthClientConfig {
     const state = Math.random().toString(36).substring(2, 15);
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
-  async exchangeCodeForToken(code: string): Promise<string> {
+  async exchangeCodeForToken(code: string): Promise<ApplicationConfigResponse> {
     const { tokenUrl } = githubConfig;
-    const response = await fetch(tokenUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+
+    try {
+      const params = new URLSearchParams({
         client_id: super.getClientId(),
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_secret: super.getClientSecret(),
         code,
         redirect_uri: super.getRedirectUri(),
-      }),
-    });
+      }).toString();
 
-    if (!response.ok) {
-      throw new Error("Failed to exchange code for token");
+      const response = await fetch(`${tokenUrl}?${params}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to exchange code for token");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error exchanging code for token:", error);
+      throw error;
     }
+  }
+  async getUserDetails(accessToken: string): Promise<any> {
+    const { userInfoUrl } = githubConfig;
 
-    const data = await response.json();
-    return data.access_token;
+    try {
+      const response = await fetch(userInfoUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+          Accept: "application/vnd.github+json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      throw error;
+    }
   }
 }
