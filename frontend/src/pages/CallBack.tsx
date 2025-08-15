@@ -8,21 +8,26 @@ export default function CallbackLoading() {
   const [isLoading, setIsLoading] = useState(true);
   const [countdown, setCountdown] = useState(5);
 
+  console.log("Initializing callback...");
+
   useEffect(() => {
     const exchangeToken = async () => {
       try {
         const queryParameter = new URLSearchParams(window.location.search);
         const code = queryParameter.get("code");
         const state = queryParameter.get("state");
+        const provider = queryParameter.get("provider");
 
-        if (code && state) {
+        if (code && state && provider) {
           console.log("Exchanging code for token...");
           await axios.post(
             `${
               import.meta.env.VITE_BACKEND_URL
             }/auth/callback?code=${encodeURIComponent(
               code
-            )}&state=${encodeURIComponent(state)}`
+            )}&state=${encodeURIComponent(state)}&provider=${encodeURIComponent(
+              provider
+            )}`
           );
           setIsLoading(false);
         } else {
