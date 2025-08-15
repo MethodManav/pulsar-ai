@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { Routes } from "./routes/routes";
+import { DatabaseConfig } from "./model/DatabaseConfig";
+import { config } from "./utiles/Config";
 
 class CreateServer {
   private app: express.Application;
@@ -17,6 +19,7 @@ class CreateServer {
     this.app.listen(5000, () => {
       console.log("Server is running on port 5000");
     });
+    DatabaseConfig.getInstance(config.DB_URL, config.DB_APP);
   }
 
   public getApp(): express.Application {

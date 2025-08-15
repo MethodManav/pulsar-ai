@@ -4,6 +4,7 @@ dotenv.config();
 interface IConfig {
   PORT: number;
   DB_URL: string;
+  DB_APP: string;
   JWT_SECRET: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
@@ -15,6 +16,7 @@ interface IConfig {
 export const config: IConfig = {
   PORT: Number(process.env.PORT) || 3000,
   DB_URL: process.env.DB_URL as string,
+  DB_APP: process.env.DB_APP as string,
   JWT_SECRET: process.env.JWT_SECRET as string,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID as string,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET as string,
