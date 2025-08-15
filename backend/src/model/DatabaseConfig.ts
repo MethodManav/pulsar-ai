@@ -1,31 +1,48 @@
-import { MongoClient, Db } from "mongodb";
+import mongoose, { Connection } from "mongoose";
+import { config } from "../utiles/Config";
+
+const uri = config.DB_URL;
+const dbName = config.DB_APP;
 
 export class DatabaseConfig {
-  private static instance: DatabaseConfig;
-  private client: MongoClient;
-  private db?: Db;
+  private connection?: Connection;
 
-  private constructor(private uri: string, private dbName: string) {
-    this.client = new MongoClient(this.uri);
-  }
+  async connect(): Promise<Connection> {
+    try {
+      await mongoose.connect(uri, { dbName });
+      this.connection = mongoose.connection;
+      console.log("Connected to MongoDB with Mongoose");
 
-  public static getInstance(uri: string, dbName: string): DatabaseConfig {
-    if (!DatabaseConfig.instance) {
-      DatabaseConfig.instance = new DatabaseConfig(uri, dbName);
+      if (this.connection && this.connection.db) {
+        const collections = await this.connection.db
+          .listCollections()
+          .toArray();
+        const collectionNames = collections.map((col) => col.name);
+        console.log(
+          `Database: ${dbName} is connected with collections: ${collectionNames.join(
+            ", "
+          )}`
+        );
+      } else {
+        console.log(
+          `Database: ${dbName} is connected, but unable to list collections.`
+        );
+      }
+      return this.connection;
+    } catch (error) {
+      console.error("MongoDB connection error:", error);
+      throw new Error("Failed to connect to MongoDB");
     }
-    return DatabaseConfig.instance;
   }
 
-  public async connect(): Promise<Db> {
-    if (!this.db) {
-      await this.client.connect();
-      this.db = this.client.db(this.dbName);
+  async disconnect(): Promise<void> {
+    if (this.connection) {
+      await mongoose.disconnect();
+      console.log("Disconnected from MongoDB");
     }
-    return this.db;
   }
 
-  public async disconnect(): Promise<void> {
-    await this.client.close();
-    this.db = undefined;
+  getDb(): Connection | undefined {
+    return this.connection;
   }
 }

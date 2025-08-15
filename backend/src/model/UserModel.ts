@@ -1,40 +1,46 @@
 import mongoose, { Schema } from "mongoose";
 import z from "zod";
 const ValidateUserModel = z.object({
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  github: z.object({
-    access_token: z.string(),
-    refresh_token: z.string(),
-    expires_in: z.number(),
-  }),
-  slack: z.object({
-    access_token: z.string(),
-    refresh_token: z.string(),
-    expires_in: z.number(),
-  }),
+  name: z.string().min(2).max(100).optional(),
+  username: z.string().min(2).max(100).optional(),
+  github: z
+    .object({
+      access_token: z.string(),
+      refresh_token: z.string(),
+      expires_in: z.number(),
+    })
+    .optional(),
+  slack: z
+    .object({
+      access_token: z.string(),
+      refresh_token: z.string(),
+      expires_in: z.number(),
+    })
+    .optional(),
 });
 
 export type IUserModel = z.infer<typeof ValidateUserModel>;
 export interface IUserDocument extends IUserModel, Document {}
 
 const UserSchema = new Schema<IUserModel>({
-  name: { type: String, required: true, minlength: 2, maxlength: 100 },
-  email: {
+  name: { type: String, required: false, minlength: 2, maxlength: 100 },
+  username: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
-    validate: { validator: (v) => z.string().email().safeParse(v).success },
+    validate: {
+      validator: (v) => z.string().min(2).max(100).safeParse(v).success,
+    },
   },
   github: {
-    access_token: { type: String, required: true },
-    refresh_token: { type: String, required: true },
-    expires_in: { type: Number, required: true },
+    access_token: { type: String, required: false },
+    refresh_token: { type: String, required: false },
+    expires_in: { type: Number, required: false },
   },
   slack: {
-    access_token: { type: String, required: true },
-    refresh_token: { type: String, required: true },
-    expires_in: { type: Number, required: true },
+    access_token: { type: String, required: false },
+    refresh_token: { type: String, required: false },
+    expires_in: { type: Number, required: false },
   },
 });
 

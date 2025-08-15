@@ -25,7 +25,8 @@ class CreateServer {
     this.app.listen(5000, () => {
       console.log("Server is running on port 5000");
     });
-    DatabaseConfig.getInstance(config.DB_URL, config.DB_APP);
+    const db = new DatabaseConfig();
+    db.connect();
   }
 
   public getApp(): express.Application {

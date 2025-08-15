@@ -16,12 +16,8 @@ export class GithubClient extends OAuthClientConfig {
     const state = Math.random().toString(36).substring(2, 15);
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
-  async exchangeCodeForToken(
-    code: string,
-    state: string
-  ): Promise<ApplicationConfigResponse> {
+  async exchangeCodeForToken(code: string, state: string) {
     const { tokenUrl } = githubConfig;
-
     try {
       const params = new URLSearchParams({
         client_id: super.getClientId(),
@@ -29,19 +25,22 @@ export class GithubClient extends OAuthClientConfig {
         code,
         redirect_uri: super.getRedirectUri(),
         state,
-      }).toString();
+      });
 
-      const response = await fetch(`${tokenUrl}?${params}`, {
+      const response = await fetch(tokenUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
+        body: params.toString(),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to exchange code for token");
+        throw new Error(
+          `Failed to exchange code for token: ${response.statusText}`
+        );
       }
-
       const data = await response.json();
       return data;
     } catch (error) {
@@ -49,6 +48,7 @@ export class GithubClient extends OAuthClientConfig {
       throw error;
     }
   }
+
   async getUserDetails(accessToken: string): Promise<any> {
     const { userInfoUrl } = githubConfig;
 

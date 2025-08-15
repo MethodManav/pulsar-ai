@@ -8,8 +8,6 @@ export default function CallbackLoading() {
   const [isLoading, setIsLoading] = useState(true);
   const [countdown, setCountdown] = useState(5);
 
-  console.log("Initializing callback...");
-
   useEffect(() => {
     const exchangeToken = async () => {
       try {
@@ -19,8 +17,7 @@ export default function CallbackLoading() {
         const provider = queryParameter.get("provider");
 
         if (code && state && provider) {
-          console.log("Exchanging code for token...");
-          await axios.post(
+          const response = await axios.post(
             `${
               import.meta.env.VITE_BACKEND_URL
             }/auth/callback?code=${encodeURIComponent(
@@ -29,7 +26,10 @@ export default function CallbackLoading() {
               provider
             )}`
           );
-          setIsLoading(false);
+          if (response.status === 200) {
+            window.location.href = "/dashboard";
+            setIsLoading(false);
+          }
         } else {
           setError(
             "Authentication parameters are missing. Please try signing in again."

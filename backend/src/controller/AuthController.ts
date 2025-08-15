@@ -19,14 +19,17 @@ export class AuthController {
   }
 
   async handleProviderCallback(req: Request, res: Response) {
-    const { provider, code,state } = req.query;
+    const { provider, code, state } = req.query;
     if (!provider) {
       return res.status(400).json({ error: "Provider is required" });
     }
     try {
       const authClient = AuthFactory.createOAuthClient(provider as string);
       //Exchange Code for access token
-      const token = await authClient.exchangeCodeForToken(code as string, state as string);
+      const token = await authClient.exchangeCodeForToken(
+        code as string,
+        state as string
+      );
 
       // Fetch User Details
       if (!token) {
@@ -36,28 +39,32 @@ export class AuthController {
       if (!userDetails) {
         return res.status(400).json({ error: "Failed to fetch user details" });
       }
-      let user = await UserModel.findOne({ email: userDetails.email });
+      const username = userDetails.login || userDetails.username || "";
+      let user = await UserModel.findOne({ username });
       if (!user) {
-        user = new UserModel({
-          email: userDetails.email,
-          name: userDetails.name,
-          [provider as string]: {
+        await UserModel.create({
+          username: userDetails.login || "",
+          name: userDetails.name || "",
+          [`${provider}`]: {
             accessToken: token.access_token,
             refreshToken: token.refresh_token,
             expiresIn: token.expires_in,
           },
         });
-        await user.save();
       } else {
         await UserModel.updateOne(
-          { _id: user._id },
+          { username: userDetails.login },
           {
-            [provider as string]: {
-              accessToken: token.access_token,
-              refreshToken: token.refresh_token,
-              expiresIn: token.expires_in,
+            $set: {
+              name: userDetails.name || "",
+              [`${provider}`]: {
+                accessToken: token.access_token,
+                refreshToken: token.refresh_token,
+                expiresIn: token.expires_in,
+              },
             },
-          }
+          },
+          { upsert: true }
         );
       }
       return res
