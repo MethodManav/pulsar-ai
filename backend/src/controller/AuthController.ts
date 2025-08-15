@@ -10,7 +10,7 @@ export class AuthController {
     try {
       const authClient = AuthFactory.createOAuthClient(provider as string);
       const authorizationUrl = authClient.getAuthorizationUrl();
-      return res.redirect(authorizationUrl);
+      return res.status(200).json({ url: authorizationUrl });
     } catch (error) {
       console.error("Error during authorization:", error);
       return res.status(500).json({ error: "Internal server error" });
