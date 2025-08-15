@@ -1,5 +1,6 @@
 import express from "express";
 import { AuthController } from "../controller/AuthController";
+import { CommonRouteConfig } from "../utiles/commonRouteConfig";
 
 export class AuthRoute extends CommonRouteConfig {
   private app: express.Application;

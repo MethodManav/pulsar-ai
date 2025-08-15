@@ -1,5 +1,4 @@
 import { AuthRoute } from "./Auth";
-import { GithubRoute } from "./GithubRoute";
 
 export class Routes {
   constructor(private app: any) {
@@ -8,6 +7,5 @@ export class Routes {
 
   private initializeRoutes() {
     new AuthRoute(this.app);
-    new GithubRoute(this.app);
   }
 }

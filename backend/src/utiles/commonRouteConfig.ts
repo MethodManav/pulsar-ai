@@ -1,3 +1,3 @@
-abstract class CommonRouteConfig {
+export abstract class CommonRouteConfig {
   public abstract configureRoutes(): void;
 }
