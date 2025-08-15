@@ -84,9 +84,16 @@ const LandingPage = () => {
 
   const handleGitHubSignIn = async () => {
     try {
-      await axios.get(
+      const {
+        data: { url: getRedirectUrl },
+      } = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/auth/authorize?provider=github`
       );
+      if (!getRedirectUrl) {
+        console.error("No redirect URL received from the backend");
+        return;
+      }
+      window.location.href = getRedirectUrl;
     } catch (error) {
       console.error("Error fetching redirect URI:", error);
     }
