@@ -35,7 +35,8 @@ export abstract class OAuthClientConfig {
   }
   abstract getAuthorizationUrl(): string;
   abstract exchangeCodeForToken(
-    code: string
+    code: string,
+    state: string
   ): Promise<ApplicationConfigResponse>;
   abstract getUserDetails(accessToken: string): Promise<any>;
 }

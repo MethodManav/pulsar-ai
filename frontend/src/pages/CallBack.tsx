@@ -16,12 +16,13 @@ export default function CallbackLoading() {
         const state = queryParameter.get("state");
 
         if (code && state) {
+          console.log("Exchanging code for token...");
           await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/callback`,
-            {
-              code,
-              state,
-            }
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/auth/callback?code=${encodeURIComponent(
+              code
+            )}&state=${encodeURIComponent(state)}`
           );
           setIsLoading(false);
         } else {

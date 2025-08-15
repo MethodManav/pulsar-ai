@@ -16,7 +16,10 @@ export class GithubClient extends OAuthClientConfig {
     const state = Math.random().toString(36).substring(2, 15);
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
-  async exchangeCodeForToken(code: string): Promise<ApplicationConfigResponse> {
+  async exchangeCodeForToken(
+    code: string,
+    state: string
+  ): Promise<ApplicationConfigResponse> {
     const { tokenUrl } = githubConfig;
 
     try {
@@ -25,6 +28,7 @@ export class GithubClient extends OAuthClientConfig {
         client_secret: super.getClientSecret(),
         code,
         redirect_uri: super.getRedirectUri(),
+        state,
       }).toString();
 
       const response = await fetch(`${tokenUrl}?${params}`, {

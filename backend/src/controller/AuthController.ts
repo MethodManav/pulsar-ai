@@ -19,14 +19,14 @@ export class AuthController {
   }
 
   async handleProviderCallback(req: Request, res: Response) {
-    const { provider } = req.query;
+    const { provider, code,state } = req.query;
     if (!provider) {
       return res.status(400).json({ error: "Provider is required" });
     }
     try {
       const authClient = AuthFactory.createOAuthClient(provider as string);
       //Exchange Code for access token
-      const token = await authClient.exchangeCodeForToken(req.body.code);
+      const token = await authClient.exchangeCodeForToken(code as string, state as string);
 
       // Fetch User Details
       if (!token) {
