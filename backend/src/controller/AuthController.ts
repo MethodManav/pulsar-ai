@@ -45,10 +45,10 @@ export class AuthController {
         await UserModel.create({
           username: userDetails.login || "",
           name: userDetails.name || "",
-          [`${provider}`]: {
-            accessToken: token.access_token,
-            refreshToken: token.refresh_token,
-            expiresIn: token.expires_in,
+          github: {
+            access_token: token.access_token,
+            refresh_token: token.refresh_token,
+            expires_in: token.expires_in,
           },
         });
       } else {
@@ -56,11 +56,10 @@ export class AuthController {
           { username: userDetails.login },
           {
             $set: {
-              name: userDetails.name || "",
-              [`${provider}`]: {
-                accessToken: token.access_token,
-                refreshToken: token.refresh_token,
-                expiresIn: token.expires_in,
+              slack: {
+                access_token: token.access_token,
+                refresh_token: token.refresh_token,
+                expires_in: token.expires_in,
               },
             },
           },
