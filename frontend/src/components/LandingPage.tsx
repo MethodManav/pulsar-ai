@@ -167,21 +167,32 @@ const LandingPage = () => {
                   in sync without the noise.
                 </p>
               </motion.div>
-
               <motion.div
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-4"
               >
+                {/* GitHub Sign-In Button */}
                 <button
                   onClick={handleGitHubSignIn}
-                  className="btn-hero group relative z-10"
+                  className="group relative z-10 flex items-center justify-center px-6 py-3 rounded-xl bg-gray-900 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
                 >
-                  <Github className="w-5 h-5 mr-2" />
-                  Sign in with GitHub
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  {/* Left Icon */}
+                  <Github className="w-5 h-5 mr-2 flex-shrink-0" />
+
+                  {/* Text */}
+                  <span className="relative z-10">Sign in with GitHub</span>
+
+                  {/* Right Arrow (slide in on hover) */}
+                  <ArrowRight className="w-5 h-5 ml-2 transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300" />
+
+                  {/* Hover Background Glow */}
+                  <span className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
 
-                <button className="btn-secondary">Learn More</button>
+                {/* Secondary Button */}
+                <button className="relative flex items-center justify-center px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium shadow-sm hover:shadow-md hover:bg-gray-100 transition-all duration-300">
+                  Learn More
+                </button>
               </motion.div>
 
               <motion.div
