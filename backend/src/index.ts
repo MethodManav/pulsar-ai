@@ -13,7 +13,13 @@ class CreateServer {
   }
 
   private configureMiddleware() {
-    this.app.use(cors());
+    this.app.use(
+      cors({
+        origin: config.CORS_ORIGIN,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+      })
+    );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.listen(5000, () => {
