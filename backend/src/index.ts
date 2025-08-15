@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Routes } from "./routes/route";
+import { Routes } from "./routes/routes";
 
 class CreateServer {
   private app: express.Application;
