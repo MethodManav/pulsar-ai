@@ -1,4 +1,4 @@
-abstract class OAuthClientConfig {
+export abstract class OAuthClientConfig {
   clientId: string;
   redirectUri: string;
   scope: string;

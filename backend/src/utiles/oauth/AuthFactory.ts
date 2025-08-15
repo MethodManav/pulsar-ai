@@ -1,5 +1,6 @@
 import { getConfigByProvider } from "../Config";
 import { GithubClient } from "../integration/Github/GithubClient";
+import { OAuthClientConfig } from "./OAuthClientConfig";
 
 export class AuthFactory {
   static createOAuthClient(type: string): OAuthClientConfig {
