@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import ParticleBackground from "./ParticleBackground";
 import axios from "axios";
+import { useEffect } from "react";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -81,7 +82,15 @@ const LandingPage = () => {
       description: "Receive instant notifications for builds and deployments",
     },
   ];
-
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("access_Token");
+      if (token) {
+        navigate("/dashboard");
+      }
+    };
+    checkAuth();
+  }, []);
   const handleGitHubSignIn = async () => {
     try {
       const {

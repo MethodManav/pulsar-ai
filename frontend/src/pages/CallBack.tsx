@@ -2,6 +2,7 @@ import axios from "axios";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function CallbackLoading() {
   const [error, setError] = useState<string | null>(null);
@@ -26,10 +27,15 @@ export default function CallbackLoading() {
               provider
             )}`
           );
-          if (response.status === 200) {
+          if (response.status === 200 && response.data.access_Token) {
+            localStorage.setItem("access_Token", response.data.access_Token);
             window.location.href = "/dashboard";
-            setIsLoading(false);
+            ToastAction({ altText: "Authentication Successful Done" });
+          } else {
+            window.location.href = "/dashboard";
+            ToastAction({ altText: "Authentication Successful Done" });
           }
+          setIsLoading(false);
         } else {
           setError(
             "Authentication parameters are missing. Please try signing in again."

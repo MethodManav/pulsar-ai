@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 import {
   Github,
   Slack,
@@ -135,7 +136,29 @@ const Dashboard = () => {
   ];
 
   const handleConnectSlack = () => {
-    // This would integrate with Slack OAuth when Supabase is connected
+    const handleSlackSignIn = async () => {
+      try {
+        const {
+          data: { url: getRedirectUrl },
+        } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/authorize?provider=slack`,
+          {
+            headers: {
+              "x-auth-token": localStorage.getItem("access_Token") ?? "",
+            },
+          }
+        );
+        if (!getRedirectUrl) {
+          console.error("No redirect URL received from the backend");
+          return;
+        }
+        window.location.href = getRedirectUrl;
+      } catch (error) {
+        console.error("Error fetching redirect URI:", error);
+      }
+    };
+
+    handleSlackSignIn();
     setIsSlackConnected(true);
   };
 
