@@ -9,7 +9,9 @@ export const generateToken = (userId: string) => {
 
 export const verifyToken = (token: string): jwt.JwtPayload | null => {
   try {
-    return jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    const data = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    console.log("Decoded JWT:", data);
+    return data;
   } catch (error) {
     return null;
   }

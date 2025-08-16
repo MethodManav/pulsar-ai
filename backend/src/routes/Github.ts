@@ -20,5 +20,11 @@ export class GithubRoutes extends CommonRouteConfig {
       AuthMiddleware.isGithubAuthenticated,
       githubController.getAllUserRepos
     );
+    this.app.post(
+      `${this.path}/connect-repo`,
+      AuthMiddleware.isValidateJWT,
+      AuthMiddleware.isGithubAuthenticated,
+      githubController.connectRepoChannel
+    );
   }
 }

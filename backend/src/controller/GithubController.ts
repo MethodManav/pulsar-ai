@@ -80,4 +80,42 @@ export class GithubController {
       res.status(500).send("error");
     }
   }
+
+  async connectRepoChannel(req: Request, res: Response) {
+    const { repoName, slackChannelId } = req.body;
+
+    if (!repoName || !slackChannelId) {
+      return res
+        .status(400)
+        .json({ message: "Missing repoName or slackChannelId" });
+    }
+
+    try {
+      // Check if the repo is already connected
+      const existing = await RepoChannelModel.findOne({
+        repoName,
+        slackChannelId,
+      });
+      if (existing) {
+        return res
+          .status(400)
+          .json({ message: "Repo is already connected to this channel" });
+      }
+
+      // Create a new connection
+      const newConnection = new RepoChannelModel({
+        repoName,
+        slackChannelId,
+        userId: req.user?.id,
+      });
+      await newConnection.save();
+
+      res.status(201).json({
+        message: "Repo connected to Slack channel",
+      });
+    } catch (err) {
+      console.error("Error connecting repo to channel:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }

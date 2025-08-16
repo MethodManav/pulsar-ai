@@ -61,6 +61,7 @@ export class AuthController {
         return res.status(200).json({ access_Token: jwtToken });
       } else {
         let userDetails = verifyToken(req.headers["x-auth-token"] as string);
+        console.log("User Details:", userDetails);
         if (!userDetails) {
           return res.status(400).json({ error: "Invalid user details" });
         }
