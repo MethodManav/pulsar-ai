@@ -65,7 +65,7 @@ export class AuthController {
         }
         userDetails = await UserModel.findByIdAndUpdate(
           {
-            _id: userDetails._id,
+            _id: userDetails.id,
           },
           {
             $set: {
