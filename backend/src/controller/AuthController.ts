@@ -31,7 +31,7 @@ export class AuthController {
         code as string,
         state as string
       );
-
+      console.log("Token received:", token);
       // Fetch User Details
       if (!token) {
         return res.status(400).json({ error: "Invalid code" });
@@ -88,6 +88,9 @@ export class AuthController {
           }
         );
       }
+      res.status(200).json({
+        message: "Authentication Done successful",
+      });
     } catch (error) {
       console.error("Error during callback handling:", error);
       return res.status(500).json({ error: "Internal server error" });
