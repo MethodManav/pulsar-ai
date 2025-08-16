@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AuthFactory } from "../utiles/oauth/AuthFactory";
 import UserModel from "../model/UserModel";
+import { generateToken, verifyToken } from "../utiles/Helper";
 
 export class AuthController {
   async authorizeProvider(req: Request, res: Response) {
@@ -35,40 +36,58 @@ export class AuthController {
       if (!token) {
         return res.status(400).json({ error: "Invalid code" });
       }
-      const userDetails = await authClient.getUserDetails(token.access_token);
-      if (!userDetails) {
-        return res.status(400).json({ error: "Failed to fetch user details" });
-      }
-      const username = userDetails.login || userDetails.username || "";
-      let user = await UserModel.findOne({ username });
-      if (!user) {
-        await UserModel.create({
+      if (provider == "github") {
+        const userDetails = await authClient.getUserDetails(
+          token.github?.access_token as string
+        );
+        if (!userDetails) {
+          return res
+            .status(400)
+            .json({ error: "Failed to fetch user details" });
+        }
+        const username = userDetails.login || userDetails.username || "";
+        await UserModel.findOne({ username });
+        const newUser = await UserModel.create({
           username: userDetails.login || "",
           name: userDetails.name || "",
           github: {
-            access_token: token.access_token,
-            refresh_token: token.refresh_token,
-            expires_in: token.expires_in,
+            access_token: token.github?.access_token as string,
+            refresh_token: token.github?.refresh_token as string,
+            expires_in: token.github?.expires_in as number,
           },
         });
+        const jwtToken = generateToken(newUser._id.toString());
+        return res.status(200).json({ access_Token: jwtToken });
       } else {
-        await UserModel.updateOne(
-          { username: userDetails.login },
+        let userDetails = verifyToken(req.headers["x-auth-token"] as string);
+        if (!userDetails) {
+          return res.status(400).json({ error: "Invalid user details" });
+        }
+        userDetails = await UserModel.findByIdAndUpdate(
+          {
+            _id: userDetails._id,
+          },
           {
             $set: {
               slack: {
-                access_token: token.access_token,
-                refresh_token: token.refresh_token,
-                expires_in: token.expires_in,
+                access_token: token.slack?.access_token as string,
+                token_type: token.slack?.token_type as string,
+                scope: token.slack?.scope as string,
+                bot_user_id: token.slack?.bot_user_id as string,
+                team: {
+                  id: token.slack?.team?.id as string,
+                  name: token.slack?.team?.name as string,
+                },
+                authed_user: {
+                  id: token.slack?.authed_user?.id as string,
+                  access_token: token.slack?.authed_user
+                    ?.access_token as string,
+                },
               },
             },
-          },
-          { upsert: true }
+          }
         );
       }
-      return res
-        .status(200)
-        .json({ message: "User authenticated successfully" });
     } catch (error) {
       console.error("Error during callback handling:", error);
       return res.status(500).json({ error: "Internal server error" });

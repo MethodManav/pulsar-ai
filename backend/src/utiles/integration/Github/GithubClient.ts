@@ -1,7 +1,4 @@
-import {
-  ApplicationConfigResponse,
-  OAuthClientConfig,
-} from "../../oauth/OAuthClientConfig";
+import { OAuthClientConfig } from "../../oauth/OAuthClientConfig";
 import githubConfig from "./GithubConfig";
 
 export class GithubClient extends OAuthClientConfig {
