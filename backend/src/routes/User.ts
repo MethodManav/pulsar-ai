@@ -14,7 +14,6 @@ export class UserRoutes extends CommonRouteConfig {
   }
   public configureRoutes(): void {
     const userController = new UserController();
-    console.log("Configuring user routes");
     this.app.get(
       `${this.path}/my`,
       AuthMiddleware.isValidateJWT,

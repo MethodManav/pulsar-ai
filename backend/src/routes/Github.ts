@@ -10,6 +10,7 @@ export class GithubRoutes extends CommonRouteConfig {
     super();
     this.app = app;
     this.path = "/github";
+    this.configureRoutes();
   }
   public configureRoutes(): void {
     const githubController = new GithubController();
