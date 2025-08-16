@@ -132,8 +132,8 @@ const Dashboard = () => {
       const linkRepo = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/github/connect-repo`,
         {
-          repoId: repoData.id,
-          channelId: channelData.id,
+          repoName: repoData.id,
+          slackChannelId: channelData.id,
         },
         {
           headers: {
