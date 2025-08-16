@@ -7,7 +7,7 @@ const slackConfig = {
   clientId: config.SLACK_CLIENT_ID,
   clientSecret: config.SLACK_CLIENT_SECRET,
   redirectUri: config.SLACK_REDIRECT_URI,
-  scope: "chat:write,channels:read,groups:read",
+  scope: "chat:write,channels:read,groups:read,channels:join",
 };
 
 export default slackConfig;
