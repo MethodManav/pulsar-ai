@@ -60,6 +60,7 @@ export class AuthController {
         const jwtToken = generateToken(newUser._id.toString());
         return res.status(200).json({ access_Token: jwtToken });
       } else {
+        console.log(req.headers["x-auth-token"] as string);
         let userDetails = verifyToken(req.headers["x-auth-token"] as string);
         console.log("User Details:", userDetails);
         if (!userDetails) {
