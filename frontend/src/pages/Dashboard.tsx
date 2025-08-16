@@ -91,40 +91,6 @@ const Dashboard = () => {
     },
   ];
 
-  // Mock available GitHub repositories
-  const availableRepos = [
-    {
-      id: "repo1",
-      name: "my-awesome-app",
-      description: "A full-stack web application",
-      private: false,
-    },
-    {
-      id: "repo2",
-      name: "mobile-app-backend",
-      description: "API for mobile application",
-      private: true,
-    },
-    {
-      id: "repo3",
-      name: "data-analytics-tool",
-      description: "Python data processing pipeline",
-      private: false,
-    },
-    {
-      id: "repo4",
-      name: "e-commerce-frontend",
-      description: "React e-commerce platform",
-      private: false,
-    },
-    {
-      id: "repo5",
-      name: "microservice-auth",
-      description: "Authentication microservice",
-      private: true,
-    },
-  ];
-
   // Mock available Slack channels
   const slackChannels = [
     { id: "general", name: "#general" },
@@ -160,14 +126,28 @@ const Dashboard = () => {
     handleSlackSignIn();
   };
 
-  const handleAddRepository = () => {
-    // This would show a modal to select GitHub repos when Supabase is connected
+  const handleAddRepository = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/github/repos`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("access_Token") ?? "",
+          },
+        }
+      );
+      if (response.data) {
+        setRepositories(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching repositories:", error);
+    }
     setIsAddRepoModalOpen(true);
   };
 
   const handleSaveRepository = () => {
     if (selectedRepo && selectedChannel) {
-      const repoData = availableRepos.find((repo) => repo.id === selectedRepo);
+      const repoData = repositories.find((repo) => repo.id === selectedRepo);
       const channelData = slackChannels.find(
         (channel) => channel.id === selectedChannel
       );
@@ -375,7 +355,7 @@ const Dashboard = () => {
                             <SelectValue placeholder="Choose a repository..." />
                           </SelectTrigger>
                           <SelectContent className="bg-card border-white/20">
-                            {availableRepos.map((repo) => (
+                            {repositories.map((repo) => (
                               <SelectItem
                                 key={repo.id}
                                 value={repo.id}
@@ -560,7 +540,7 @@ const Dashboard = () => {
                               <SelectValue placeholder="Choose a repository..." />
                             </SelectTrigger>
                             <SelectContent className="bg-card border-white/20">
-                              {availableRepos.map((repo) => (
+                              {repositories.map((repo) => (
                                 <SelectItem
                                   key={repo.id}
                                   value={repo.id}
