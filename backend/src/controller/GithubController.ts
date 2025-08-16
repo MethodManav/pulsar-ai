@@ -19,13 +19,21 @@ export class GithubController {
   async webhookEventHandler(req: Request, res: Response) {
     try {
       const payload = req.body;
-      console.log("Received webhook event:", payload);
-      console.log("Event type:", req.headers["x-github-event"]);
 
-      if (!payload.workflow_run) return res.status(200).send("No workflow_run");
+      if (!payload.deployment_status) {
+        return res.status(200).send("No deployment_status");
+      }
 
-      const repo = payload.repository.full_name;
-      const conclusion = payload.workflow_run.conclusion;
+      const state = payload.deployment_status.state;
+
+      // Only act on completed states
+      if (!["success", "failure"].includes(state)) {
+        console.log(`Ignoring deployment state: ${state}`);
+        return res.status(200).send("Ignored state");
+      }
+
+      const repo = payload.repository.id;
+      console.log("Repository ID:", repo);
 
       // Fetch channel(s) for this repo from DB
       const repoChannels = await RepoChannelModel.aggregate([
@@ -47,28 +55,31 @@ export class GithubController {
           },
         },
       ]);
+      console.log("Repo Channels:", repoChannels);
 
       if (!repoChannels.length) {
-        console.log(`No Slack channels configured for repo: ${repo}`);
+        console.log(`No Slack channels configured for repo:`);
         return res.status(200).send("No channels");
       }
 
       // Send message to each channel
       for (const rc of repoChannels) {
         const message =
-          conclusion === "failure"
-            ? `❌ Build failed for *${repo}*`
-            : `✅ Workflow completed: ${conclusion} for *${repo}*`;
+          state === "success"
+            ? `✅ Build succeeded for *${payload.repository.name}*`
+            : `❌ Build failed for *${payload.repository.name}*`;
 
         try {
           const slackClient = new App({
             token: rc.user.slack.access_token,
             signingSecret: config.SLACK_SIGNING_SECRET,
           });
+
           await slackClient.client.chat.postMessage({
             channel: rc.slackChannelId,
             text: message,
           });
+
           console.log(`Slack message sent to ${rc.slackChannelId}:`, message);
         } catch (err) {
           console.error(`Slack error for channel ${rc.slackChannelId}:`, err);
@@ -146,7 +157,6 @@ export class GithubController {
         channel: newConnection.slackChannelId,
         text: `:tada: Hello <!channel>! The repository has been successfully connected. 🎉\nGet ready to stay updated on all changes and notifications!`,
       });
-      console.log("Slack message sent:", result);
       res.status(201).json({
         message: "Repo connected to Slack channel",
       });
