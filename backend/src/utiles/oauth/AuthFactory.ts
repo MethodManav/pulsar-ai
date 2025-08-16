@@ -1,5 +1,6 @@
 import { getConfigByProvider } from "../Config";
 import { GithubClient } from "../integration/Github/GithubClient";
+import { SlackClient } from "../integration/Slack/SlackClient";
 import { OAuthClientConfig } from "./OAuthClientConfig";
 
 export class AuthFactory {
@@ -11,6 +12,9 @@ export class AuthFactory {
           githubConfig.clientId,
           githubConfig.clientSecret
         );
+      case "slack":
+        const slackConfig = getConfigByProvider("slack");
+        return new SlackClient(slackConfig.clientId, slackConfig.clientSecret);
       default:
         throw new Error("Unsupported OAuth provider");
     }
