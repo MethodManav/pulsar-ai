@@ -26,7 +26,25 @@ export class GithubController {
       const conclusion = payload.workflow_run.conclusion;
 
       // Fetch channel(s) for this repo from DB
-      const repoChannels = await RepoChannelModel.find({ repoName: repo });
+      const repoChannels = await RepoChannelModel.aggregate([
+        { $match: { repoName: repo } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        { $unwind: "$user" },
+        {
+          $project: {
+            _id: 1,
+            slackChannelId: 1,
+            "user.slack.access_token": 1,
+          },
+        },
+      ]);
 
       if (!repoChannels.length) {
         console.log(`No Slack channels configured for repo: ${repo}`);
@@ -41,7 +59,11 @@ export class GithubController {
             : `✅ Workflow completed: ${conclusion} for *${repo}*`;
 
         try {
-          await this.slackClient.client.chat.postMessage({
+          const slackClient = new App({
+            token: rc.user.slack.access_token,
+            signingSecret: config.SLACK_SIGNING_SECRET,
+          });
+          await slackClient.client.chat.postMessage({
             channel: rc.slackChannelId,
             text: message,
           });
