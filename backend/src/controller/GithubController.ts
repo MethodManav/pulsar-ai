@@ -20,6 +20,7 @@ export class GithubController {
     try {
       const payload = req.body;
       console.log("Received webhook event:", payload);
+      console.log("Event type:", req.headers["x-github-event"]);
 
       if (!payload.workflow_run) return res.status(200).send("No workflow_run");
 
