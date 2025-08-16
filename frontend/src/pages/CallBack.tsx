@@ -30,10 +30,8 @@ export default function CallbackLoading() {
           if (response.status === 200 && response.data.access_Token) {
             localStorage.setItem("access_Token", response.data.access_Token);
             window.location.href = "/dashboard";
-            ToastAction({ altText: "Authentication Successful Done" });
           } else {
             window.location.href = "/dashboard";
-            ToastAction({ altText: "Authentication Successful Done" });
           }
           setIsLoading(false);
         } else {

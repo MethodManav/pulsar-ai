@@ -1,4 +1,4 @@
-import { OAuthClientConfig } from "../../oauth/OAuthClientConfig";
+import { GithubAuth, OAuthClientConfig } from "../../oauth/OAuthClientConfig";
 import githubConfig from "./GithubConfig";
 
 export class GithubClient extends OAuthClientConfig {
@@ -13,7 +13,7 @@ export class GithubClient extends OAuthClientConfig {
     const state = Math.random().toString(36).substring(2, 15);
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
-  async exchangeCodeForToken(code: string, state: string) {
+  async exchangeCodeForToken(code: string, state: string): Promise<GithubAuth> {
     const { tokenUrl } = githubConfig;
     try {
       const params = new URLSearchParams({
@@ -39,7 +39,14 @@ export class GithubClient extends OAuthClientConfig {
         );
       }
       const data = await response.json();
-      return data;
+      let githubAuth: GithubAuth = {
+        github: {
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          expires_in: data.expires_in,
+        },
+      };
+      return githubAuth;
     } catch (error) {
       console.error("Error exchanging code for token:", error);
       throw error;

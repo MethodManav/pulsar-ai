@@ -1,4 +1,4 @@
-import { OAuthClientConfig } from "../../oauth/OAuthClientConfig";
+import { OAuthClientConfig, SlackAuth } from "../../oauth/OAuthClientConfig";
 import slackConfig from "./SlackConfig";
 
 export class SlackClient extends OAuthClientConfig {
@@ -15,7 +15,7 @@ export class SlackClient extends OAuthClientConfig {
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
 
-  async exchangeCodeForToken(code: string, state: string) {
+  async exchangeCodeForToken(code: string, state: string): Promise<SlackAuth> {
     const { tokenUrl } = slackConfig;
     try {
       const params = new URLSearchParams({
@@ -41,7 +41,23 @@ export class SlackClient extends OAuthClientConfig {
         );
       }
       const data = await response.json();
-      return data;
+      let slackAuth: SlackAuth = {
+        slack: {
+          access_token: data.access_token,
+          token_type: data.token_type,
+          scope: data.scope,
+          bot_user_id: data.bot_user_id,
+          team: {
+            id: data.team?.id,
+            name: data.team?.name,
+          },
+          authed_user: {
+            id: data.authed_user?.id,
+            access_token: data.authed_user?.access_token,
+          },
+        },
+      };
+      return slackAuth;
     } catch (error) {
       console.error("Error exchanging code for token:", error);
       throw error;

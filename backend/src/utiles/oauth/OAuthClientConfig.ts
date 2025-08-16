@@ -1,4 +1,4 @@
-interface GithubAuth {
+export interface GithubAuth {
   github: {
     access_token?: string;
     refresh_token?: string;
@@ -8,7 +8,7 @@ interface GithubAuth {
 }
 
 // Slack interface
-interface SlackAuth {
+export interface SlackAuth {
   slack: {
     access_token?: string;
     token_type?: string;
