@@ -13,6 +13,7 @@ export const verifyToken = (token: string): jwt.JwtPayload | null => {
     console.log("Decoded JWT:", data);
     return data;
   } catch (error) {
+    console.error("JWT verification failed:", error);
     return null;
   }
 };
