@@ -139,10 +139,11 @@ export class GithubController {
         token: user?.slack?.access_token,
         signingSecret: config.SLACK_SIGNING_SECRET,
       });
-
+      // auto join channel
+      await slackClient.client.conversations.join({ channel: slackChannelId });
       const result = await slackClient.client.chat.postMessage({
         channel: newConnection.slackChannelId,
-        text: `Hello <!channel>, the repository *${repoName}* has been connected!`,
+        text: `:tada: Hello <!channel>! The repository has been successfully connected. 🎉\nGet ready to stay updated on all changes and notifications!`,
       });
       console.log("Slack message sent:", result);
       res.status(201).json({
