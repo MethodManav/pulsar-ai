@@ -191,6 +191,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const isUserLoggedIn = localStorage.getItem("access_Token");
+        if (!isUserLoggedIn) {
+          window.location.href = "/";
+        }
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/user/my`,
           {
