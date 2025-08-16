@@ -31,7 +31,6 @@ export class AuthController {
         code as string,
         state as string
       );
-      console.log("Token received:", token);
       // Fetch User Details
       if (!token) {
         return res.status(400).json({ error: "Invalid code" });
@@ -55,14 +54,13 @@ export class AuthController {
             refresh_token: token.github?.refresh_token as string,
             expires_in: token.github?.expires_in as number,
             updatedAt: new Date(),
+            connected: true,
           },
         });
         const jwtToken = generateToken(newUser._id.toString());
         return res.status(200).json({ access_Token: jwtToken });
       } else {
-        console.log(req.headers["x-auth-token"] as string);
         let userDetails = verifyToken(req.headers["x-auth-token"] as string);
-        console.log("User Details:", userDetails);
         if (!userDetails) {
           return res.status(400).json({ error: "Invalid user details" });
         }
@@ -84,6 +82,8 @@ export class AuthController {
                 authed_user: {
                   id: token.slack?.authed_user?.id as string,
                 },
+                updatedAt: new Date(),
+                connected: true,
               },
             },
           }

@@ -1,4 +1,5 @@
 import { AuthRoute } from "./Auth";
+import { UserRoutes } from "./User";
 
 export class Routes {
   constructor(private app: any) {
@@ -7,5 +8,6 @@ export class Routes {
 
   private initializeRoutes() {
     new AuthRoute(this.app);
+    new UserRoutes(this.app);
   }
 }

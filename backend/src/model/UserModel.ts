@@ -50,6 +50,7 @@ const UserSchema = new Schema<IUserModel>({
     refresh_token: { type: String, required: false },
     expires_in: { type: Number, required: false },
     updatedAt: { type: Date, required: false },
+    connected: { type: Boolean, required: false },
   },
   slack: {
     access_token: { type: String, required: false },
@@ -66,6 +67,7 @@ const UserSchema = new Schema<IUserModel>({
     },
     enterprise: { type: Object, required: false },
     is_enterprise_install: { type: Boolean, required: false },
+    connected: { type: Boolean, required: false },
   },
 });
 
