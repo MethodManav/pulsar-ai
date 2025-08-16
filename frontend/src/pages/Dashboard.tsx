@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import {
@@ -188,6 +188,25 @@ const Dashboard = () => {
       setSelectedChannel("");
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/user/my`,
+          {
+            headers: {
+              "x-auth-token": localStorage.getItem("access_Token") ?? "",
+            },
+          }
+        );
+        setIsSlackConnected(response.data.user.slack?.connected || false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
