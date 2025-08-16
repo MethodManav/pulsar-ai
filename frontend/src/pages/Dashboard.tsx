@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [isAddRepoModalOpen, setIsAddRepoModalOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState("");
   const [selectedChannel, setSelectedChannel] = useState("");
+  const [slackChannels, setSlackChannels] = useState([]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -66,41 +67,6 @@ const Dashboard = () => {
       },
     },
   };
-
-  const mockRepos = [
-    {
-      id: 1,
-      name: "awesome-project",
-      status: "success",
-      lastBuild: "2 minutes ago",
-      channel: "#deployment-alerts",
-    },
-    {
-      id: 2,
-      name: "react-dashboard",
-      status: "pending",
-      lastBuild: "5 minutes ago",
-      channel: "#dev-team",
-    },
-    {
-      id: 3,
-      name: "api-service",
-      status: "failed",
-      lastBuild: "1 hour ago",
-      channel: "#backend-alerts",
-    },
-  ];
-
-  // Mock available Slack channels
-  const slackChannels = [
-    { id: "general", name: "#general" },
-    { id: "dev-team", name: "#dev-team" },
-    { id: "deployment-alerts", name: "#deployment-alerts" },
-    { id: "backend-alerts", name: "#backend-alerts" },
-    { id: "frontend-updates", name: "#frontend-updates" },
-    { id: "qa-testing", name: "#qa-testing" },
-  ];
-
   const handleConnectSlack = () => {
     const handleSlackSignIn = async () => {
       try {
@@ -128,7 +94,7 @@ const Dashboard = () => {
 
   const handleAddRepository = async () => {
     try {
-      const response = await axios.get(
+      const githubResponse = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/github/repos`,
         {
           headers: {
@@ -136,8 +102,20 @@ const Dashboard = () => {
           },
         }
       );
-      if (response.data) {
-        setRepositories(response.data);
+      const slackResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/slack/channel-list`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("access_Token") ?? "",
+          },
+        }
+      );
+      if (githubResponse.data && slackResponse.data.channels) {
+        setRepositories(githubResponse.data);
+        setSlackChannels(slackResponse.data.channels[0]);
+      } else {
+        console.error("Error fetching data");
+        return;
       }
     } catch (error) {
       console.error("Error fetching repositories:", error);
@@ -145,22 +123,29 @@ const Dashboard = () => {
     setIsAddRepoModalOpen(true);
   };
 
-  const handleSaveRepository = () => {
+  const handleSaveRepository = async () => {
     if (selectedRepo && selectedChannel) {
       const repoData = repositories.find((repo) => repo.id === selectedRepo);
       const channelData = slackChannels.find(
         (channel) => channel.id === selectedChannel
       );
-
-      const newRepo = {
-        id: Date.now(),
-        name: repoData.name,
-        status: "success",
-        lastBuild: "Just now",
-        channel: channelData.name,
-      };
-
-      setRepositories((prev) => [...prev, newRepo]);
+      const linkRepo = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/github/connect`,
+        {
+          repoId: repoData.id,
+          channelId: channelData.id,
+        },
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("access_Token") ?? "",
+          },
+        }
+      );
+      if (!linkRepo.data.success) {
+        console.error("Error linking repository:", linkRepo.data.message);
+        return;
+      }
+      setRepositories([]);
       setIsAddRepoModalOpen(false);
       setSelectedRepo("");
       setSelectedChannel("");
@@ -430,9 +415,8 @@ const Dashboard = () => {
                             <Github className="w-4 h-4" />
                             <span className="font-medium">
                               {
-                                availableRepos.find(
-                                  (r) => r.id === selectedRepo
-                                )?.name
+                                repositories.find((r) => r.id === selectedRepo)
+                                  ?.name
                               }
                             </span>
                             <span className="text-muted-foreground">→</span>
@@ -615,7 +599,7 @@ const Dashboard = () => {
                               <Github className="w-4 h-4" />
                               <span className="font-medium">
                                 {
-                                  availableRepos.find(
+                                  repositories.find(
                                     (r) => r.id === selectedRepo
                                   )?.name
                                 }
