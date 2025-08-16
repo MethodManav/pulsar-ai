@@ -157,9 +157,7 @@ const Dashboard = () => {
         console.error("Error fetching redirect URI:", error);
       }
     };
-
     handleSlackSignIn();
-    setIsSlackConnected(true);
   };
 
   const handleAddRepository = () => {
