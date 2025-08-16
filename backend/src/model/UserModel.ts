@@ -10,6 +10,7 @@ const ValidateUserModel = z.object({
       access_token: z.string(),
       refresh_token: z.string(),
       expires_in: z.number(),
+      updatedAt: z.date(),
     })
     .optional(),
   slack: z
@@ -48,6 +49,7 @@ const UserSchema = new Schema<IUserModel>({
     access_token: { type: String, required: false },
     refresh_token: { type: String, required: false },
     expires_in: { type: Number, required: false },
+    updatedAt: { type: Date, required: false },
   },
   slack: {
     access_token: { type: String, required: false },

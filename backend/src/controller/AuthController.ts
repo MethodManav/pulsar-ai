@@ -54,6 +54,7 @@ export class AuthController {
             access_token: token.github?.access_token as string,
             refresh_token: token.github?.refresh_token as string,
             expires_in: token.github?.expires_in as number,
+            updatedAt: new Date(),
           },
         });
         const jwtToken = generateToken(newUser._id.toString());
