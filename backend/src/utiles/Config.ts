@@ -13,6 +13,8 @@ interface IConfig {
   SLACK_CLIENT_ID: string;
   SLACK_CLIENT_SECRET: string;
   SLACK_REDIRECT_URI: string;
+  SLACK_BOT_TOKEN: string;
+  SLACK_SIGNING_SECRET: string;
   CORS_ORIGIN: string;
 }
 
@@ -28,6 +30,8 @@ export const config: IConfig = {
   SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID as string,
   SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET as string,
   SLACK_REDIRECT_URI: process.env.SLACK_REDIRECT_URI as string,
+  SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN as string,
+  SLACK_SIGNING_SECRET: process.env.SLACK_SIGNING_SECRET as string,
   CORS_ORIGIN: process.env.CORS_ORIGIN as string,
 };
 
