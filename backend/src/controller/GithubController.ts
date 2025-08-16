@@ -19,6 +19,7 @@ export class GithubController {
   async webhookEventHandler(req: Request, res: Response) {
     try {
       const payload = req.body;
+      console.log("Received webhook event:", payload);
 
       if (!payload.workflow_run) return res.status(200).send("No workflow_run");
 
@@ -131,7 +132,19 @@ export class GithubController {
         userId: req.user?.id,
       });
       await newConnection.save();
+      //fetch user slack token
+      const user = await UserModel.findById(req.user?.id);
+      //send greeting to channel
+      const slackClient = new App({
+        token: user?.slack?.access_token,
+        signingSecret: config.SLACK_SIGNING_SECRET,
+      });
 
+      const result = await slackClient.client.chat.postMessage({
+        channel: newConnection.slackChannelId,
+        text: `Hello <!channel>, the repository *${repoName}* has been connected!`,
+      });
+      console.log("Slack message sent:", result);
       res.status(201).json({
         message: "Repo connected to Slack channel",
       });
