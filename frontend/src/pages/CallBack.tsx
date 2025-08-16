@@ -25,8 +25,15 @@ export default function CallbackLoading() {
               code
             )}&state=${encodeURIComponent(state)}&provider=${encodeURIComponent(
               provider
-            )}`
+            )}`,
+            {},
+            {
+              headers: {
+                "x-auth-token": localStorage.getItem("access_Token"),
+              },
+            }
           );
+
           if (response.status === 200 && response.data.access_Token) {
             localStorage.setItem("access_Token", response.data.access_Token);
             window.location.href = "/dashboard";
