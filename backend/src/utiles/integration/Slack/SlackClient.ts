@@ -41,6 +41,10 @@ export class SlackClient extends OAuthClientConfig {
         );
       }
       const data = await response.json();
+      console.log("Slack token exchange response:", data);
+      if (data.error) {
+        throw new Error(`Slack API error: ${data.error}`);
+      }
       let slackAuth: SlackAuth = {
         slack: {
           access_token: data.access_token,
