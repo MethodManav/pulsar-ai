@@ -112,7 +112,7 @@ const Dashboard = () => {
       );
       if (githubResponse.data && slackResponse.data.channels) {
         setRepositories(githubResponse.data);
-        setSlackChannels(slackResponse.data.channels[0]);
+        setSlackChannels(slackResponse.data.channels);
       } else {
         console.error("Error fetching data");
         return;
@@ -130,7 +130,7 @@ const Dashboard = () => {
         (channel) => channel.id === selectedChannel
       );
       const linkRepo = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/github/connect`,
+        `${import.meta.env.VITE_BACKEND_URL}/github/connect-repo`,
         {
           repoId: repoData.id,
           channelId: channelData.id,
@@ -145,7 +145,17 @@ const Dashboard = () => {
         console.error("Error linking repository:", linkRepo.data.message);
         return;
       }
-      setRepositories([]);
+      setRepositories((prev) => [
+        ...prev,
+        {
+          id: repoData.id,
+          name: repoData.name,
+          description: repoData.description,
+          private: repoData.private,
+          channel: channelData.name,
+          status: "active",
+        },
+      ]);
       setIsAddRepoModalOpen(false);
       setSelectedRepo("");
       setSelectedChannel("");
@@ -609,7 +619,7 @@ const Dashboard = () => {
                               <span className="font-medium">
                                 {
                                   slackChannels.find(
-                                    (c) => c.id === selectedChannel
+                                    (c) => c.id == selectedChannel
                                   )?.name
                                 }
                               </span>
