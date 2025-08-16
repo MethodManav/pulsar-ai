@@ -57,8 +57,10 @@ export class SlackClient extends OAuthClientConfig {
           },
           authed_user: {
             id: data.authed_user?.id,
-            access_token: data.authed_user?.access_token,
           },
+          app_id: data.app_id,
+          enterprise: data.enterprise,
+          is_enterprise_install: data.is_enterprise_install,
         },
       };
       return slackAuth;

@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import z from "zod";
+import z, { boolean } from "zod";
+import { GithubAuth } from "../utiles/oauth/OAuthClientConfig";
+
 const ValidateUserModel = z.object({
   name: z.string().min(2).max(100).optional(),
   username: z.string().min(2).max(100).optional(),
@@ -20,14 +22,15 @@ const ValidateUserModel = z.object({
         id: z.string(),
         name: z.string(),
       },
-      authed_user: z.object({
+      authed_user: {
         id: z.string(),
         access_token: z.string(),
-      }),
+      },
+      enterprise: {},
+      is_enterprise_install: boolean,
     })
     .optional(),
 });
-
 export type IUserModel = z.infer<typeof ValidateUserModel>;
 export interface IUserDocument extends IUserModel, Document {}
 
@@ -59,6 +62,8 @@ const UserSchema = new Schema<IUserModel>({
       id: { type: String, required: false },
       access_token: { type: String, required: false },
     },
+    enterprise: { type: Object, required: false },
+    is_enterprise_install: { type: Boolean, required: false },
   },
 });
 

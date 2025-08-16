@@ -80,8 +80,6 @@ export class AuthController {
                 },
                 authed_user: {
                   id: token.slack?.authed_user?.id as string,
-                  access_token: token.slack?.authed_user
-                    ?.access_token as string,
                 },
               },
             },

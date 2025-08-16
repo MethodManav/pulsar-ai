@@ -40,7 +40,6 @@ export default function CallbackLoading() {
           } else {
             window.location.href = "/dashboard";
           }
-          setIsLoading(false);
         } else {
           setError(
             "Authentication parameters are missing. Please try signing in again."

@@ -9,6 +9,7 @@ interface IConfig {
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   GITHUB_REDIRECT_URI: string;
+  GITHUB_WEBHOOK_SECRET: string;
   SLACK_CLIENT_ID: string;
   SLACK_CLIENT_SECRET: string;
   SLACK_REDIRECT_URI: string;
@@ -23,6 +24,7 @@ export const config: IConfig = {
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID as string,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_SECRET as string,
   GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI as string,
+  GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET as string,
   SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID as string,
   SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET as string,
   SLACK_REDIRECT_URI: process.env.SLACK_REDIRECT_URI as string,

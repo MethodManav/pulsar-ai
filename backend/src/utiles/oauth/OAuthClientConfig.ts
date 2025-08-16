@@ -10,18 +10,20 @@ export interface GithubAuth {
 // Slack interface
 export interface SlackAuth {
   slack: {
-    access_token?: string;
-    token_type?: string;
-    scope?: string;
-    bot_user_id?: string;
-    team?: {
-      id?: string;
-      name?: string;
+    app_id: string;
+    authed_user: {
+      id: string;
     };
-    authed_user?: {
-      id?: string;
-      access_token?: string;
+    scope: string;
+    token_type: string;
+    access_token: string;
+    bot_user_id: string;
+    team: {
+      id: string;
+      name: string;
     };
+    enterprise: {};
+    is_enterprise_install: boolean;
   };
   github?: never;
 }
