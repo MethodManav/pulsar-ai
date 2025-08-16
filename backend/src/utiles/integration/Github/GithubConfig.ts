@@ -5,6 +5,7 @@ const githubConfig = {
   tokenUrl: "https://github.com/login/oauth/access_token",
   userInfoUrl: "https://api.github.com/user",
   redirectUri: config.GITHUB_REDIRECT_URI,
+  refreshTokenUrl: "https://github.com/login/oauth/access_token",
   scope: "repo repo_deployment",
 };
 export default githubConfig;

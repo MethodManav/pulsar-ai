@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+import UserModel from "../../../model/UserModel";
 import { GithubAuth, OAuthClientConfig } from "../../oauth/OAuthClientConfig";
 import githubConfig from "./GithubConfig";
 
@@ -74,6 +76,55 @@ export class GithubClient extends OAuthClientConfig {
       return data;
     } catch (error) {
       console.error("Error fetching user details:", error);
+      throw error;
+    }
+  }
+
+  async refreshGitHubToken(
+    refreshToken: string,
+    userId: string | ObjectId
+  ): Promise<boolean> {
+    const { refreshTokenUrl } = githubConfig;
+    try {
+      const params = new URLSearchParams({
+        client_id: super.getClientId(),
+        client_secret: super.getClientSecret(),
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      });
+
+      const response = await fetch(refreshTokenUrl, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: params.toString(),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to refresh access token");
+      }
+
+      const data = await response.json();
+      const UserUpdate = UserModel.findByIdAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          $set: {
+            github: {
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
+              expires_in: data.expires_in,
+              updatedAt: new Date(),
+            },
+          },
+        }
+      );
+      return true;
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
       throw error;
     }
   }
