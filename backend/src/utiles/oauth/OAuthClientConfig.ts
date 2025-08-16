@@ -1,10 +1,29 @@
-export interface ApplicationConfigResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  scope: string;
-  refresh_token_expires_in: string;
-  token_type: string;
+interface GithubAuth {
+  github: {
+    access_token?: string;
+    refresh_token?: string;
+    expires_in?: number;
+  };
+  slack?: never; // ensures only one provider is allowed
+}
+
+// Slack interface
+interface SlackAuth {
+  slack: {
+    access_token?: string;
+    token_type?: string;
+    scope?: string;
+    bot_user_id?: string;
+    team?: {
+      id?: string;
+      name?: string;
+    };
+    authed_user?: {
+      id?: string;
+      access_token?: string;
+    };
+  };
+  github?: never;
 }
 
 export abstract class OAuthClientConfig {
@@ -40,6 +59,6 @@ export abstract class OAuthClientConfig {
   abstract exchangeCodeForToken(
     code: string,
     state: string
-  ): Promise<ApplicationConfigResponse>;
+  ): Promise<GithubAuth | SlackAuth>;
   abstract getUserDetails(accessToken: string): Promise<any>;
 }

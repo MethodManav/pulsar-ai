@@ -13,8 +13,17 @@ const ValidateUserModel = z.object({
   slack: z
     .object({
       access_token: z.string(),
-      refresh_token: z.string(),
-      expires_in: z.number(),
+      token_type: z.string(),
+      scope: z.string(),
+      bot_user_id: z.string(),
+      team: {
+        id: z.string(),
+        name: z.string(),
+      },
+      authed_user: z.object({
+        id: z.string(),
+        access_token: z.string(),
+      }),
     })
     .optional(),
 });
@@ -39,8 +48,17 @@ const UserSchema = new Schema<IUserModel>({
   },
   slack: {
     access_token: { type: String, required: false },
-    refresh_token: { type: String, required: false },
-    expires_in: { type: Number, required: false },
+    token_type: { type: String, required: false },
+    scope: { type: String, required: false },
+    bot_user_id: { type: String, required: false },
+    team: {
+      id: { type: String, required: false },
+      name: { type: String, required: false },
+    },
+    authed_user: {
+      id: { type: String, required: false },
+      access_token: { type: String, required: false },
+    },
   },
 });
 
