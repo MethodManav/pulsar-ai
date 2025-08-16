@@ -1,5 +1,6 @@
 import { AuthRoute } from "./Auth";
 import { GithubRoutes } from "./Github";
+import { SlackRoutes } from "./Slack";
 import { UserRoutes } from "./User";
 
 export class Routes {
@@ -11,5 +12,6 @@ export class Routes {
     new AuthRoute(this.app);
     new UserRoutes(this.app);
     new GithubRoutes(this.app);
+    new SlackRoutes(this.app);
   }
 }
