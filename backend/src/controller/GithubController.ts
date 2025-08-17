@@ -37,7 +37,7 @@ export class GithubController {
 
       // Fetch channel(s) for this repo from DB
       const repoChannels = await RepoChannelModel.aggregate([
-        { $match: { repoName: repo } },
+        { $match: { repoName: String(repo) } },
         {
           $lookup: {
             from: "users",

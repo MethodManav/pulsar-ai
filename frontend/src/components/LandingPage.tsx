@@ -107,7 +107,6 @@ const LandingPage = () => {
       console.error("Error fetching redirect URI:", error);
     }
   };
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <ParticleBackground />
