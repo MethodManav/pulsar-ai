@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utiles/Helper";
+import { decodeToken, generateToken, verifyToken } from "../utiles/Helper";
 import UserModel from "../model/UserModel";
 import { GithubClient } from "../utiles/integration/Github/GithubClient";
 import { getConfigByProvider } from "../utiles/Config";
@@ -17,6 +17,12 @@ export class AuthMiddleware {
     }
     const verifyJWT = verifyToken(token);
     if (!verifyJWT) {
+      const decodeJwt = decodeToken(token);
+      // refresh token
+      if (decodeJwt) {
+        const newToken = generateToken(decodeJwt.id);
+        return res.status(200).json({ refreshToken: newToken });
+      }
       return res.status(401).json({ message: "Invalid token" });
     }
     if (!req.user) {

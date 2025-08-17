@@ -176,6 +176,9 @@ const Dashboard = () => {
             },
           }
         );
+        if (response.data.refreshToken) {
+          localStorage.setItem("access_Token", response.data.refreshToken);
+        }
         setIsSlackConnected(response.data.user.slack?.connected || false);
       } catch (error) {
         console.error("Error fetching user data:", error);

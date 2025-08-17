@@ -17,3 +17,14 @@ export const verifyToken = (token: string): jwt.JwtPayload | null => {
     return null;
   }
 };
+
+export const decodeToken = (token: string): jwt.JwtPayload | null => {
+  try {
+    const data = jwt.decode(token) as jwt.JwtPayload;
+    console.log("Decoded JWT:", data);
+    return data;
+  } catch (error) {
+    console.error("JWT decoding failed:", error);
+    return null;
+  }
+};
