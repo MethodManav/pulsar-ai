@@ -123,7 +123,7 @@ const LandingPage = () => {
             <div className="w-8 h-8 bg-button-gradient rounded-lg flex items-center justify-center">
               <Bell className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold">NotifyPro</span>
+            <span className="text-xl font-bold">Pulsar-Ai</span>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -438,7 +438,7 @@ const LandingPage = () => {
               <div className="w-6 h-6 bg-button-gradient rounded-md flex items-center justify-center">
                 <Bell className="w-3 h-3 text-white" />
               </div>
-              <span className="font-semibold">NotifyPro</span>
+              <span className="font-semibold">Pulsar-Ai</span>
             </div>
 
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
@@ -461,7 +461,7 @@ const LandingPage = () => {
           </div>
 
           <div className="mt-8 pt-8 border-t border-white/5 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 NotifyPro. Built for the Vercel Hackathon.</p>
+            <p>&copy; 2024 Pulsar-Ai by Manav Behera</p>
           </div>
         </div>
       </motion.footer>

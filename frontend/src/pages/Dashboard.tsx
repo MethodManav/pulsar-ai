@@ -45,6 +45,7 @@ const Dashboard = () => {
   const [selectedRepo, setSelectedRepo] = useState("");
   const [selectedChannel, setSelectedChannel] = useState("");
   const [slackChannels, setSlackChannels] = useState([]);
+  const [token, setToken] = useState("");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -177,7 +178,9 @@ const Dashboard = () => {
           }
         );
         if (response.data.refreshToken) {
-          localStorage.setItem("access_Token", response.data.refreshToken);
+          const newToken = response.data.refreshToken;
+          setToken(newToken);
+          localStorage.setItem("access_Token", newToken);
         }
         setIsSlackConnected(response.data.user.slack?.connected || false);
       } catch (error) {
@@ -186,7 +189,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   return (
     <div className="min-h-screen bg-background">
