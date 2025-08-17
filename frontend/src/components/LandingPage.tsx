@@ -183,7 +183,7 @@ const LandingPage = () => {
                 {/* GitHub Sign-In Button */}
                 <button
                   onClick={handleGitHubSignIn}
-                  className="group relative z-10 flex items-center justify-center px-6 py-3 rounded-xl bg-gray-900 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  className="btn-hero group relative flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-electric-blue to-neon-purple "
                 >
                   {/* Left Icon */}
                   <Github className="w-5 h-5 mr-2 flex-shrink-0" />
@@ -192,10 +192,10 @@ const LandingPage = () => {
                   <span className="relative z-10">Sign in with GitHub</span>
 
                   {/* Right Arrow (slide in on hover) */}
-                  <ArrowRight className="w-5 h-5 ml-2 transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-5 h-5 ml-2 transform translate-x-0 " />
 
                   {/* Hover Background Glow */}
-                  <span className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gray-800 opacity-0"></span>
                 </button>
 
                 {/* Secondary Button */}
