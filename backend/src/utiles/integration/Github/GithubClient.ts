@@ -8,14 +8,10 @@ export class GithubClient extends OAuthClientConfig {
     super(clientId, githubConfig.redirectUri, githubConfig.scope, clientSecret);
   }
   getAuthorizationUrl() {
-    const { authorizationUrl } = githubConfig;
-    const clientId = super.getClientId();
-    const redirectUri = super.getRedirectUri();
-    const scopes = super.getScopes().join(" ");
-    const state = Math.random().toString(36).substring(2, 15);
-    return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
+    const { installationUrl } = githubConfig;
+    return installationUrl
   }
-  async exchangeCodeForToken(code: string, state: string): Promise<GithubAuth> {
+  async exchangeCodeForToken(code: string): Promise<GithubAuth> {
     const { tokenUrl } = githubConfig;
     try {
       const params = new URLSearchParams({
@@ -23,7 +19,6 @@ export class GithubClient extends OAuthClientConfig {
         client_secret: super.getClientSecret(),
         code,
         redirect_uri: super.getRedirectUri(),
-        state,
       });
 
       const response = await fetch(tokenUrl, {

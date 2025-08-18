@@ -2,7 +2,6 @@ import axios from "axios";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
 
 export default function CallbackLoading() {
   const [error, setError] = useState<string | null>(null);
@@ -17,13 +16,14 @@ export default function CallbackLoading() {
         const state = queryParameter.get("state");
         const provider = queryParameter.get("provider");
 
+
         if (code && state && provider) {
           const response = await axios.post(
             `${
               import.meta.env.VITE_BACKEND_URL
             }/auth/callback?code=${encodeURIComponent(
               code
-            )}&state=${encodeURIComponent(state)}&provider=${encodeURIComponent(
+            )}&state=${encodeURIComponent(state) ?? ""}&provider=${encodeURIComponent(
               provider
             )}`,
             {},
