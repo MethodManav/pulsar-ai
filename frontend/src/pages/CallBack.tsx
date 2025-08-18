@@ -15,12 +15,29 @@ export default function CallbackLoading() {
         const code = queryParameter.get("code");
         const state = queryParameter.get("state");
         const provider = queryParameter.get("provider");
+        const installationId = queryParameter.get("installation_id");
 
-
-        if (code && state && provider) {
+        if (provider === "github" && installationId) {
+          for(const key of queryParameter.keys()) {
+            console.log(`${key}: ${queryParameter.get(key)}`);
+          }
+          console.log(queryParameter);
           const response = await axios.post(
-            `${
-              import.meta.env.VITE_BACKEND_URL
+            `${import.meta.env.VITE_BACKEND_URL
+            }/auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}&installation_id=${encodeURIComponent(installationId)}&provider=${encodeURIComponent(
+              provider
+            )}`,
+          );
+          if (response.status === 200 && response.data.access_Token) {
+            localStorage.setItem("access_Token", response.data.access_Token);
+            window.location.href = "/dashboard";
+          } else {
+            setError("Failed to connect GitHub installation. Please try again.");
+            setIsLoading(false);
+          }
+        } else if (provider === "slack") {
+          const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL
             }/auth/callback?code=${encodeURIComponent(
               code
             )}&state=${encodeURIComponent(state) ?? ""}&provider=${encodeURIComponent(
@@ -57,21 +74,21 @@ export default function CallbackLoading() {
     exchangeToken();
   }, []);
 
-  useEffect(() => {
-    if (error) {
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            window.location.href = "https://pulsar-ai-red.vercel.app/";
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  // useEffect(() => {
+  //   if (error) {
+  //     const timer = setInterval(() => {
+  //       setCountdown((prev) => {
+  //         if (prev <= 1) {
+  //           window.location.href = "https://pulsar-ai-red.vercel.app/";
+  //           return 0;
+  //         }
+  //         return prev - 1;
+  //       });
+  //     }, 1000);
 
-      return () => clearInterval(timer);
-    }
-  }, [error]);
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [error]);
 
   if (error) {
     return (

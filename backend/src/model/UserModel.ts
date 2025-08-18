@@ -8,6 +8,7 @@ const ValidateUserModel = z.object({
   github: z
     .object({
       access_token: z.string(),
+      installation_id: z.string().optional(),
       refresh_token: z.string(),
       expires_in: z.number(),
       updatedAt: z.date(),
@@ -48,6 +49,7 @@ const UserSchema = new Schema<IUserModel>({
   github: {
     access_token: { type: String, required: false },
     refresh_token: { type: String, required: false },
+    installation_id: { type: String, required: false },
     expires_in: { type: Number, required: false },
     updatedAt: { type: Date, required: false },
     connected: { type: Boolean, required: false },

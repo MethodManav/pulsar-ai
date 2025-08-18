@@ -51,6 +51,7 @@ export class AuthController {
           name: userDetails.name || "",
           github: {
             access_token: token.github?.access_token as string,
+            installation_id: req.query.installation_id as string || "",
             refresh_token: token.github?.refresh_token as string,
             expires_in: token.github?.expires_in as number,
             updatedAt: new Date(),
