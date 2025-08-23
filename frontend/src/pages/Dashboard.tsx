@@ -111,9 +111,9 @@ const Dashboard = () => {
           },
         }
       );
-      if (githubResponse.data && slackResponse.data.channels) {
+      if (githubResponse.data && slackResponse.data) {
         setRepositories(githubResponse.data);
-        setSlackChannels(slackResponse.data.channels);
+        setSlackChannels(slackResponse.data);
       } else {
         console.error("Error fetching data");
         return;

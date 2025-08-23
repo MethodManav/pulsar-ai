@@ -113,6 +113,7 @@ export class GithubController {
         name: repo.name,
         full_name: repo.full_name,
         private: repo.private,
+        description: repo.description,
       }));
 
       res.status(200).json(repos);
