@@ -108,7 +108,13 @@ export class GithubController {
           sort: "updated", // optional: sort by last updated
         },
       });
-      const repos = response.data;
+      const repos = response.data.map((repo: any) => ({
+        id: repo.id,
+        name: repo.name,
+        full_name: repo.full_name,
+        private: repo.private,
+      }));
+
       res.status(200).json(repos);
     } catch (err) {
       console.error("Error fetching user repos:", err);
@@ -128,8 +134,12 @@ export class GithubController {
     try {
       // Check if the repo is already connected
       const existing = await RepoChannelModel.findOne({
-        repoName,
-        slackChannelId,
+        repos: {
+          id: repoName.id,
+        },
+        slackChannels: {
+          id: slackChannelId.id,
+        },
       });
       if (existing) {
         return res
@@ -153,8 +163,8 @@ export class GithubController {
       });
       // auto join channel
       await slackClient.client.conversations.join({ channel: slackChannelId });
-      const result = await slackClient.client.chat.postMessage({
-        channel: newConnection.slackChannelId,
+      await slackClient.client.chat.postMessage({
+        channel: newConnection.slackChannels.id,
         text: `:tada: Hello <!channel>! The repository has been successfully connected. 🎉\nGet ready to stay updated on all changes and notifications!`,
       });
       res.status(201).json({
