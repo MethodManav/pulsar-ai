@@ -20,5 +20,11 @@ export class SlackRoutes extends CommonRouteConfig {
       AuthMiddleware.isGithubAuthenticated,
       slackController.getAllChannels
     );
+    this.app.get(
+      `${this.path}/get-user/connected-channel`,
+      AuthMiddleware.isValidateJWT,
+      AuthMiddleware.isGithubAuthenticated,
+      slackController.getUserConnectedChannel
+    );
   }
 }
