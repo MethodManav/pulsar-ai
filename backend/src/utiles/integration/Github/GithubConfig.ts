@@ -8,10 +8,11 @@ const githubConfig = {
   redirectUri: config.GITHUB_REDIRECT_URI,
   refreshTokenUrl: "https://github.com/login/oauth/access_token",
   scope: "repo repo_deployment",
-  
+
   // GitHub App URLs
   installationUrl: "https://github.com/apps/app-pulsar-ai/installations/new",
-  installationTokenUrl: "https://api.github.com/app/installations/{installation_id}/access_tokens",
+  installationTokenUrl:
+    "https://api.github.com/app/installations/{installation_id}/access_tokens",
   installationsUrl: "https://api.github.com/app/installations",
 };
 export default githubConfig;

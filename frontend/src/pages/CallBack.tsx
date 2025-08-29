@@ -15,34 +15,38 @@ export default function CallbackLoading() {
         const code = queryParameter.get("code");
         const state = queryParameter.get("state");
         const provider = queryParameter.get("provider");
-        const installationId = queryParameter.get("installation_id");
+        const installation_id = queryParameter.get("installation_id");
 
-        if (provider === "github" && installationId) {
-          for(const key of queryParameter.keys()) {
+        if (provider === "github" && !installation_id) {
+          for (const key of queryParameter.keys()) {
             console.log(`${key}: ${queryParameter.get(key)}`);
           }
           console.log(queryParameter);
           const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL
-            }/auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}&installation_id=${encodeURIComponent(installationId)}&provider=${encodeURIComponent(
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/auth/callback?code=${encodeURIComponent(
+              code
+            )}&state=${encodeURIComponent(state)}&provider=${encodeURIComponent(
               provider
-            )}`,
+            )}`
           );
           if (response.status === 200 && response.data.access_Token) {
             localStorage.setItem("access_Token", response.data.access_Token);
             window.location.href = "/dashboard";
           } else {
-            setError("Failed to connect GitHub installation. Please try again.");
+            setError(
+              "Failed to connect GitHub installation. Please try again."
+            );
             setIsLoading(false);
           }
         } else if (provider === "slack") {
           const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL
-            }/auth/callback?code=${encodeURIComponent(
-              code
-            )}&state=${encodeURIComponent(state) ?? ""}&provider=${encodeURIComponent(
-              provider
-            )}`,
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/auth/callback?code=${encodeURIComponent(code)}&state=${
+              encodeURIComponent(state) ?? ""
+            }&provider=${encodeURIComponent(provider)}`,
             {},
             {
               headers: {
@@ -57,11 +61,29 @@ export default function CallbackLoading() {
           } else {
             window.location.href = "/dashboard";
           }
-        } else {
-          setError(
-            "Authentication parameters are missing. Please try signing in again."
+        } else if (provider === "github" && installation_id) {
+          const response = await axios.post(
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/github/callback?installation_id=${encodeURIComponent(
+              installation_id
+            )}`,
+            {},
+            {
+              headers: {
+                "x-auth-token": localStorage.getItem("access_Token"),
+              },
+            }
           );
-          setIsLoading(false);
+
+          if (response.status == 200) {
+            window.location.href = "/dashboard";
+          } else {
+            setError(
+              "Failed to connect GitHub installation. Please try again."
+            );
+            setIsLoading(false);
+          }
         }
       } catch (err) {
         setError(

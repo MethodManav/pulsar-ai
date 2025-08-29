@@ -5,6 +5,7 @@ import { config } from "../utiles/Config";
 import RepoChannelModel from "../model/RepoChannelModel";
 import UserModel from "../model/UserModel";
 import axios from "axios";
+import githubConfig from "../utiles/integration/Github/GithubConfig";
 
 export class GithubController {
   private slackClient: App;
@@ -174,6 +175,40 @@ export class GithubController {
     } catch (err) {
       console.error("Error connecting repo to channel:", err);
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async getInstallationUrl(req: Request, res: Response) {
+    try {
+      const { installationUrl } = githubConfig;
+      return res.status(200).json({ url: installationUrl });
+    } catch (err) {
+      console.error("Error installing GitHub app:", err);
+    }
+    res.status(500).json({ message: "Internal server error" });
+  }
+  async setInstallationUrl(req: Request, res: Response) {
+    try {
+      const { installation_id } = req.query;
+      console.log("Received installation_id:", installation_id);
+      if (!installation_id) {
+        return res.status(400).json({ message: "Missing installation_id" });
+      }
+
+      const updateUser = await UserModel.findByIdAndUpdate(req.user?.id, {
+        $set: {
+          "github.installation_id": installation_id,
+          "github.connected": true,
+        },
+      });
+      if (!updateUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      return res
+        .status(200)
+        .json({ message: "Installation ID set successfully" });
+    } catch (err) {
+      console.error("Error getting installation URL:", err);
     }
   }
 }

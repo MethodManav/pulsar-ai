@@ -40,6 +40,7 @@ import { Label } from "@/components/ui/label";
 
 const Dashboard = () => {
   const [isSlackConnected, setIsSlackConnected] = useState(false);
+  const [isGithubConnected, setIsGithubConnected] = useState(false);
   const [repositories, setRepositories] = useState([]);
   const [isAddRepoModalOpen, setIsAddRepoModalOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState("");
@@ -92,7 +93,6 @@ const Dashboard = () => {
     };
     handleSlackSignIn();
   };
-
   const handleAddRepository = async () => {
     try {
       const githubResponse = await axios.get(
@@ -123,7 +123,6 @@ const Dashboard = () => {
     }
     setIsAddRepoModalOpen(true);
   };
-
   const handleSaveRepository = async () => {
     if (selectedRepo && selectedChannel) {
       const repoData = repositories.find((repo) => repo.id === selectedRepo);
@@ -177,12 +176,14 @@ const Dashboard = () => {
             },
           }
         );
+        console.log(response.data);
         if (response.data.refreshToken) {
           const newToken = response.data.refreshToken;
           setToken(newToken);
           localStorage.setItem("access_Token", newToken);
         }
         setIsSlackConnected(response.data.user.slack?.connected || false);
+        setIsGithubConnected(response.data.user.github?.connected || false);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -190,6 +191,24 @@ const Dashboard = () => {
 
     fetchData();
   }, [token]);
+  const handleConnectGithub = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/github/new-app`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("access_Token") ?? "",
+          },
+        }
+      );
+      if (!response.data.success) {
+        console.error("Error connecting GitHub:", response.data.message);
+      }
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error("Error connecting GitHub:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -280,28 +299,36 @@ const Dashboard = () => {
             <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Github className="w-5 h-5" />
-                  <span>GitHub Integration</span>
+                  <Github className="w-5 h-5 text-electric-blue" />
+                  <span>Github Integration</span>
                 </CardTitle>
                 <CardDescription>
-                  Your GitHub account is connected and ready
+                  Connect your github repository to receive notifications
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-sm font-medium">
-                      Connected as @developer
-                    </span>
+                {isGithubConnected ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-sm font-medium">Connected</span>
+                    </div>
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-500/10 text-green-500 border-green-500/20"
+                    >
+                      Active
+                    </Badge>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-500/10 text-green-500 border-green-500/20"
+                ) : (
+                  <Button
+                    onClick={handleConnectGithub}
+                    className="w-full btn-hero"
                   >
-                    Active
-                  </Badge>
-                </div>
+                    <Slack className="w-4 h-4 mr-2" />
+                    Connect Github
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>
