@@ -45,7 +45,11 @@ export class AuthController {
             .json({ error: "Failed to fetch user details" });
         }
         const username = userDetails.login || userDetails.username || "";
-        await UserModel.findOne({ username });
+        const isExistingUser = await UserModel.findOne({ username });
+        if (isExistingUser) {
+          const jwtToken = generateToken(isExistingUser._id.toString());
+          return res.status(200).json({ access_Token: jwtToken });
+        }
         const newUser = await UserModel.create({
           username: userDetails.login || "",
           name: userDetails.name || "",
