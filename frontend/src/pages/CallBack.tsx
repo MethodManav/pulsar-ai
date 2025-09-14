@@ -67,7 +67,7 @@ export default function CallbackLoading() {
               import.meta.env.VITE_BACKEND_URL
             }/github/callback?installation_id=${encodeURIComponent(
               installation_id
-            )}`,
+            )}&code=${encodeURIComponent(code)}`,
             {},
             {
               headers: {

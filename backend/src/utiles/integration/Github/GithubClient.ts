@@ -17,7 +17,7 @@ export class GithubClient extends OAuthClientConfig {
     return `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
   }
   async exchangeCodeForToken(code: string, state: string): Promise<GithubAuth> {
-    const { tokenUrl, userInfoUrl } = githubConfig;
+    const { tokenUrl } = githubConfig;
     try {
       const params = new URLSearchParams({
         client_id: super.getClientId(),
@@ -41,7 +41,7 @@ export class GithubClient extends OAuthClientConfig {
           `Failed to exchange code for token: ${response.statusText}`
         );
       }
-      const data = await response.json();
+      const data = await response.json(); 
       let githubAuth: GithubAuth = {
         github: {
           access_token: data.access_token,

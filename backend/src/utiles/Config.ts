@@ -8,6 +8,8 @@ interface IConfig {
   JWT_SECRET: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
+  GITHUB_INSTALLATION_CLIENT_ID: string;
+  GITHUB_INSTALLATION_SECRET: string;
   GITHUB_REDIRECT_URI: string;
   GITHUB_WEBHOOK_SECRET: string;
   SLACK_CLIENT_ID: string;
@@ -25,6 +27,9 @@ export const config: IConfig = {
   JWT_SECRET: process.env.JWT_SECRET as string,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID as string,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_SECRET as string,
+  GITHUB_INSTALLATION_CLIENT_ID: process.env
+    .GITHUB_INSTALLATION_CLIENT_ID as string,
+  GITHUB_INSTALLATION_SECRET: process.env.GITHUB_INSTALLATION_SECRET as string,
   GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI as string,
   GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET as string,
   SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID as string,
