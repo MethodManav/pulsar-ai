@@ -405,9 +405,6 @@ const Dashboard = () => {
                                         </Badge>
                                       )}
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                      {repo.description}
-                                    </p>
                                   </div>
                                 </div>
                               </SelectItem>
@@ -589,9 +586,6 @@ const Dashboard = () => {
                                           </Badge>
                                         )}
                                       </div>
-                                      <p className="text-xs text-muted-foreground">
-                                        {repo.description}
-                                      </p>
                                     </div>
                                   </div>
                                 </SelectItem>
