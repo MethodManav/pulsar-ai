@@ -97,7 +97,6 @@ export class GithubController {
   async getAllUserRepos(req: Request, res: Response) {
     try {
       const userId = req.user?.id;
-      //fetch user access token
       const user = await UserModel.findById(userId);
       const response = await axios.get("https://api.github.com/user/repos", {
         headers: {
@@ -105,8 +104,8 @@ export class GithubController {
           Accept: "application/vnd.github.v3+json",
         },
         params: {
-          per_page: 100, // number of repos per page
-          sort: "updated", // optional: sort by last updated
+          per_page: 100,
+          sort: "updated",
         },
       });
       const repos = response.data.map((repo: any) => ({
@@ -114,7 +113,6 @@ export class GithubController {
         name: repo.name,
         full_name: repo.full_name,
         private: repo.private,
-        description: repo.description,
       }));
 
       res.status(200).json(repos);
@@ -126,7 +124,7 @@ export class GithubController {
 
   async connectRepoChannel(req: Request, res: Response) {
     const { repoName, slackChannelId } = req.body;
-
+    console.log("Connect Repo Payload:", req.body);
     if (!repoName || !slackChannelId) {
       return res
         .status(400)
@@ -137,10 +135,10 @@ export class GithubController {
       // Check if the repo is already connected
       const existing = await RepoChannelModel.findOne({
         repos: {
-          id: repoName.id,
+          id: repoName, //
         },
         slackChannels: {
-          id: slackChannelId.id,
+          id: slackChannelId,
         },
       });
       if (existing) {
@@ -175,76 +173,6 @@ export class GithubController {
     } catch (err) {
       console.error("Error connecting repo to channel:", err);
       res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
-  async getInstallationUrl(req: Request, res: Response) {
-    try {
-      const { installationUrl } = githubConfig;
-      return res.status(200).json({ url: installationUrl });
-    } catch (err) {
-      console.error("Error installing GitHub app:", err);
-    }
-    res.status(500).json({ message: "Internal server error" });
-  }
-  async setInstallationUrl(req: Request, res: Response) {
-    try {
-      const { installation_id, code } = req.query;
-      console.log("Received installation_id:", installation_id);
-      if (!installation_id) {
-        return res.status(400).json({ message: "Missing installation_id" });
-      }
-      //fetch user
-      const isExisting = await UserModel.findById(req.user?.id);
-      if (!isExisting) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const userInfo = await GithubController.getUserInfoFromInstallation(
-        code as string
-      );
-      const updateUser = await UserModel.findByIdAndUpdate(
-        req.user?.id,
-        {
-          $set: {
-            "github.installation_id": installation_id,
-            "github.access_token": userInfo.access_token,
-            "github.connected": true,
-          },
-        },
-        { new: true }
-      );
-      if (!updateUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      return res
-        .status(200)
-        .json({ message: "Installation ID set successfully" });
-    } catch (err) {
-      console.error("Error getting installation URL:", err);
-    }
-  }
-  static async getUserInfoFromInstallation(code: string): Promise<any> {
-    try {
-      const { tokenUrl } = githubConfig;
-      const clientId = config.GITHUB_INSTALLATION_CLIENT_ID;
-      const clientSecret = config.GITHUB_INSTALLATION_SECRET;
-      const response = await fetch(
-        `${tokenUrl}?client_id=${clientId}&client_secret=${clientSecret}&code=${code}`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(response.statusText || "Failed to fetch user info");
-      }
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      console.error("Error fetching user info:", err);
-      throw new Error("Failed to fetch user info");
     }
   }
 }

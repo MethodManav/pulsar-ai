@@ -194,7 +194,7 @@ const Dashboard = () => {
   const handleConnectGithub = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/github/new-app`,
+        `${import.meta.env.VITE_BACKEND_URL}/github-app/new-app`,
         {
           headers: {
             "x-auth-token": localStorage.getItem("access_Token") ?? "",

@@ -1,31 +1,31 @@
-import { GithubController } from "../controller/GithubController";
+import { GithubAppController } from "../controller/GithubAppController";
 import { AuthMiddleware } from "../middleware/AuthMiddleware";
 import { CommonRouteConfig } from "../utiles/commonRouteConfig";
 import express from "express";
 
-export class GithubRoutes extends CommonRouteConfig {
+export class GithubApp extends CommonRouteConfig {
   private app: express.Application;
   private path: string;
+
   constructor(app: express.Application) {
     super();
     this.app = app;
-    this.path = "/github";
+    this.path = "/github-app";
     this.configureRoutes();
   }
   public configureRoutes(): void {
-    const githubController = new GithubController();
-    this.app.post(`${this.path}/events`, githubController.webhookEventHandler);
+    const githubController = new GithubAppController();
     this.app.get(
-      `${this.path}/repos`,
+      `${this.path}/new-app`,
       AuthMiddleware.isValidateJWT,
       AuthMiddleware.isGithubAuthenticated,
-      githubController.getAllUserRepos
+      githubController.getInstallationUrl
     );
     this.app.post(
-      `${this.path}/connect-repo`,
+      `${this.path}/callback`,
       AuthMiddleware.isValidateJWT,
       AuthMiddleware.isGithubAuthenticated,
-      githubController.connectRepoChannel
+      githubController.setInstallationUrl
     );
   }
 }
