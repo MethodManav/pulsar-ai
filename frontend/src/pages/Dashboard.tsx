@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import ServerWakeUpLoader from "@/components/server-wake-up-loader";
 
 const Dashboard = () => {
   const [isSlackConnected, setIsSlackConnected] = useState(false);
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const [selectedChannel, setSelectedChannel] = useState("");
   const [slackChannels, setSlackChannels] = useState([]);
   const [token, setToken] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -186,6 +188,8 @@ const Dashboard = () => {
         setIsGithubConnected(response.data.user.github?.connected || false);
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -209,6 +213,10 @@ const Dashboard = () => {
       console.error("Error connecting GitHub:", error);
     }
   };
+
+  if (isLoading) {
+    return <ServerWakeUpLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
