@@ -5,12 +5,12 @@ import {
   Github,
   Slack,
   Plus,
-  Settings,
   Bell,
   CheckCircle,
   ExternalLink,
   GitBranch,
   X,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -227,6 +227,11 @@ const Dashboard = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_Token");
+    window.location.href = "/";
+  };
+
   if (isLoading) {
     return <ServerWakeUpLoader />;
   }
@@ -245,13 +250,10 @@ const Dashboard = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </Button>
-              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                <Github className="w-4 h-4" />
-              </div>
             </div>
           </div>
         </div>
