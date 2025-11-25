@@ -179,26 +179,68 @@ const LandingPage = () => {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                {/* GitHub Sign-In Button */}
+                {/* GitHub Sign-In Button with server-wakeup loader */}
                 <button
-                  onClick={handleGitHubSignIn}
+                  onClick={async (e) => {
+                  const btn = e.currentTarget as HTMLButtonElement;
+                  // prevent double clicks
+                  if (btn.dataset.loading === "true") return;
+                  btn.dataset.loading = "true";
+                  btn.setAttribute("aria-busy", "true");
+                  btn.disabled = true;
+
+                  // hide original arrow icon and text
+                  const text = btn.querySelector('[data-role="text"]') as HTMLElement | null;
+                  const arrow = btn.querySelector('[data-role="arrow"]') as HTMLElement | null;
+                  if (text) text.style.display = "none";
+                  if (arrow) arrow.style.display = "none";
+
+                  // add inline loader UI
+                  const loader = document.createElement("span");
+                  loader.setAttribute("data-role", "loader");
+                  loader.className = "inline-flex items-center space-x-2";
+                  loader.innerHTML = `
+                    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="4"></circle>
+                    <path d="M22 12a10 10 0 00-10-10" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+                    </svg>
+                    <span class="text-sm">Waking server...</span>
+                  `;
+                  btn.appendChild(loader);
+
+                  try {
+                    // call existing handler (which will redirect on success)
+                    await handleGitHubSignIn();
+                  } catch (err) {
+                    // restore UI on error
+                    console.error("Sign-in error:", err);
+                    if (loader.parentNode) loader.parentNode.removeChild(loader);
+                    if (text) text.style.display = "";
+                    if (arrow) arrow.style.display = "";
+                    btn.removeAttribute("aria-busy");
+                    btn.disabled = false;
+                    btn.dataset.loading = "false";
+                  }
+                  }}
                   className="btn-hero group relative flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-electric-blue to-neon-purple "
                 >
                   {/* Left Icon */}
                   <Github className="w-5 h-5 mr-2 flex-shrink-0" />
 
                   {/* Text */}
-                  <span className="relative z-10">Sign in with GitHub</span>
+                  <span data-role="text" className="relative z-10">
+                  Sign in with GitHub
+                  </span>
 
                   {/* Right Arrow (slide in on hover) */}
-                  <ArrowRight className="w-5 h-5 ml-2 transform translate-x-0 " />
+                  <ArrowRight data-role="arrow" className="w-5 h-5 ml-2 transform translate-x-0 " />
 
                   {/* Hover Background Glow */}
                   <span className="absolute inset-0 bg-gray-800 opacity-0"></span>
                 </button>
 
                 {/* Secondary Button */}
-                <button className="relative flex items-center justify-center px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium shadow-sm hover:shadow-md hover:bg-gray-100 transition-all duration-300">
+                <button className="relative flex items-center justify-center px-6 py-3 rounded-xl border border-gray-300 text-white font-medium shadow-sm hover:shadow-md hover:bg-gray-100 hover:text-black transition-colors duration-300">
                   Learn More
                 </button>
               </motion.div>

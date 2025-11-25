@@ -48,7 +48,7 @@ const Dashboard = () => {
   const [selectedChannel, setSelectedChannel] = useState("");
   const [slackChannels, setSlackChannels] = useState([]);
   const [token, setToken] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [connectedRepositories, setConnectedRepositories] = useState([]);
 
   const containerVariants = {
@@ -356,17 +356,18 @@ const Dashboard = () => {
             </Card>
           </motion.div>
 
-          {/* Repositories Section */}
-          <motion.div variants={itemVariants}>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-2xl font-bold">Connected Repositories</h3>
-                <p className="text-muted-foreground">
-                  Monitor builds and deployments for your projects
-                </p>
-              </div>
+          {/* Repositories Section - Only show when both GitHub and Slack are connected */}
+          {isGithubConnected && isSlackConnected && (
+            <motion.div variants={itemVariants}>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold">Connected Repositories</h3>
+                  <p className="text-muted-foreground">
+                    Monitor builds and deployments for your projects
+                  </p>
+                </div>
 
-              {isSlackConnected && (
+              {isSlackConnected && isGithubConnected && (
                 <Dialog
                   open={isAddRepoModalOpen}
                   onOpenChange={setIsAddRepoModalOpen}
@@ -517,7 +518,45 @@ const Dashboard = () => {
               )}
             </div>
 
-            {!isSlackConnected ? (
+            {!isGithubConnected && !isSlackConnected ? (
+              <Card className="glass-card">
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <GitBranch className="w-12 h-12 text-muted-foreground mb-4" />
+                  <h4 className="text-lg font-semibold mb-2">
+                    Connect Your Integrations
+                  </h4>
+                  <p className="text-muted-foreground text-center mb-6">
+                    Connect both GitHub and Slack to start monitoring your repositories
+                  </p>
+                  <div className="flex space-x-3">
+                    <Button onClick={handleConnectGithub} className="btn-hero">
+                      <Github className="w-4 h-4 mr-2" />
+                      Connect GitHub
+                    </Button>
+                    <Button onClick={handleConnectSlack} className="btn-hero">
+                      <Slack className="w-4 h-4 mr-2" />
+                      Connect Slack
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : !isGithubConnected ? (
+              <Card className="glass-card">
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Github className="w-12 h-12 text-muted-foreground mb-4" />
+                  <h4 className="text-lg font-semibold mb-2">
+                    Connect GitHub First
+                  </h4>
+                  <p className="text-muted-foreground text-center mb-6">
+                    You need to connect your GitHub account to access repositories
+                  </p>
+                  <Button onClick={handleConnectGithub} className="btn-hero">
+                    <Github className="w-4 h-4 mr-2" />
+                    Connect GitHub
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : !isSlackConnected ? (
               <Card className="glass-card">
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <Slack className="w-12 h-12 text-muted-foreground mb-4" />
@@ -739,7 +778,8 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
-          </motion.div>
+            </motion.div>
+          )}
         </motion.div>
       </main>
     </div>
