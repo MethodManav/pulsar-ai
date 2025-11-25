@@ -49,6 +49,7 @@ const Dashboard = () => {
   const [slackChannels, setSlackChannels] = useState([]);
   const [token, setToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [connectedRepositories, setConnectedRepositories] = useState([]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -147,20 +148,29 @@ const Dashboard = () => {
         console.error("Error linking repository:", linkRepo.data.message);
         return;
       }
-      setRepositories((prev) => [
-        ...prev,
-        {
-          id: repoData.id,
-          name: repoData.name,
-          description: repoData.description,
-          private: repoData.private,
-          channel: channelData.name,
-          status: "active",
-        },
-      ]);
+      // Refresh the connected repositories list
+      await connectedRepos();
       setIsAddRepoModalOpen(false);
       setSelectedRepo("");
       setSelectedChannel("");
+    }
+  };
+
+  const connectedRepos= async ()=>{
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/github/connected-repos`,
+        {
+          headers: {
+            "x-auth-token": localStorage.getItem("access_Token") ?? "",
+          },
+        }
+      );
+      if (response.data) {
+        setConnectedRepositories(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching connected repositories:", error);
     }
   };
   useEffect(() => {
@@ -186,6 +196,9 @@ const Dashboard = () => {
         }
         setIsSlackConnected(response.data.user.slack?.connected || false);
         setIsGithubConnected(response.data.user.github?.connected || false);
+        
+        // Fetch connected repositories when page loads
+        await connectedRepos();
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -519,7 +532,7 @@ const Dashboard = () => {
                   </Button>
                 </CardContent>
               </Card>
-            ) : repositories.length === 0 ? (
+            ) : connectedRepositories.length === 0 ? (
               <Card className="glass-card">
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <GitBranch className="w-12 h-12 text-muted-foreground mb-4" />
@@ -685,16 +698,16 @@ const Dashboard = () => {
               </Card>
             ) : (
               <div className="grid gap-4">
-                {repositories.map((repo) => (
+                {connectedRepositories.map((repo) => (
                   <Card key={repo.id} className="glass-card">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <Github className="w-5 h-5" />
                           <div>
-                            <h4 className="font-semibold">{repo.name}</h4>
+                            <h4 className="font-semibold">{repo.name || repo.repoName}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Last build: {repo.lastBuild}
+                              {repo.description || "No description available"}
                             </p>
                           </div>
                         </div>
@@ -704,26 +717,14 @@ const Dashboard = () => {
                             <span className="text-muted-foreground">
                               Channel:{" "}
                             </span>
-                            <span className="font-medium">{repo.channel}</span>
+                            <span className="font-medium">{repo.slackChannelName || repo.channel}</span>
                           </div>
 
                           <Badge
-                            variant={
-                              repo.status === "success"
-                                ? "default"
-                                : repo.status === "failed"
-                                ? "destructive"
-                                : "secondary"
-                            }
-                            className={
-                              repo.status === "success"
-                                ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                : repo.status === "failed"
-                                ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-                            }
+                            variant="default"
+                            className="bg-green-500/10 text-green-500 border-green-500/20"
                           >
-                            {repo.status}
+                            Connected
                           </Badge>
 
                           <Button variant="ghost" size="sm">
